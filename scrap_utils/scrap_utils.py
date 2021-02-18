@@ -1,13 +1,6 @@
 """This module provides some functions that might save you from repetition in scraping projects."""
 import csv, json, math, time
 import requests
-# To Do:
-#   soup_get
-#   driver_get
-#   start_firefox
-#   read_csv
-#   remove print statements
-#   add unittest
 
 
 class MaxTryReached(Exception):
@@ -37,7 +30,7 @@ def dump_json(data, filepath, encoding=None, errors=None, indent=4,
     print("Json dumped to", filepath)
 
 
-def to_csv(dataset, filepath, mode="a", encoding=None, errors=None, newline=''
+def to_csv(dataset, filepath, mode="a", encoding=None, errors=None, newline='',
         header=True, dialect='excel', **fmtparams):
     """Save dataset to csv file."""
     with open(filepath, mode=mode, encoding=encoding, errors=errors,
