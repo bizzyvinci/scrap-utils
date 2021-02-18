@@ -1,7 +1,18 @@
 # Scrap Utils
 This is small package that contains some code regularly repeated when scraping.
 
-It has the following functions:
+### To install
+```python
+pip install scrap-utils
+```
+
+### To import in your program
+```python
+import scrap_utils
+```
+
+
+### It has the following functions:
 ```python
 load_json(filepath, encoding=None, errors=None, parse_float=None,
 	parse_int=None, parse_constant=None)
@@ -17,7 +28,7 @@ requests_get(url, trials=0, sleep_time=30, max_try=math.inf, **requests_kwargs)
 requests_post(url, trials=0, sleep_time=30, max_try=math.inf, **requests_kwargs)
 ```
 
-To-do list I'm considering:
+### To-do list I'm considering:
 * remove print statements
 * add unittest
 * soup_get()
@@ -25,4 +36,4 @@ To-do list I'm considering:
 * start_firefox()
 * read_csv()
 
-Feel free to add your contribution [here](https://github.com/bizzyvinci/scrap-utils)
+#### Feel free to add your contribution [here](https://github.com/bizzyvinci/scrap-utils)
