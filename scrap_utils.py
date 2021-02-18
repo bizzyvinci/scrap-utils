@@ -6,6 +6,8 @@ import requests
 #   driver_get
 #   start_firefox
 #   read_csv
+#   remove print statements
+#   add unittest
 
 
 class MaxTryReached(Exception):
