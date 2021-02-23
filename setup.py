@@ -11,6 +11,7 @@ setup(
     description="A small package that contains commonly used codes while scraping",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    license = "MIT",
     url="https://github.com/bizzyvinci/scrap-utils",
     packages=["scrap_utils"],
     keywords = ["scrap", "scraping", "scraper", "requests", "csv", "json"],
