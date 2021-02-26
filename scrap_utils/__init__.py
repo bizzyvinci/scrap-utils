@@ -1,1 +1,1 @@
-from scrap_utils import *
+from .scrap_utils import *
