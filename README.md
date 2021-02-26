@@ -6,9 +6,12 @@ This is small package that contains some code regularly repeated when scraping.
 pip install scrap-utils
 ```
 
-### To import in your program
+### Sample code
 ```python
-import scrap_utils
+import scrap_utils as su
+
+response = su.requests_get("https://python.org")
+len(response.text)
 ```
 
 
