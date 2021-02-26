@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="scrap-utils",
-    version="0.0.1",
+    version="0.0.2rc1",
     author="Bisola Olasehinde",
     author_email="horlasehinde@gmail.com",
     description="A small package that contains commonly used codes while scraping",
