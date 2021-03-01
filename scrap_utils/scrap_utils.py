@@ -87,7 +87,7 @@ def dump_json(obj, filepath, encoding=None, errors=None, indent=4,
         <https://docs.python.org/3/library/json.html#py-to-json-table>`_.
     filepath: string
         filepath to save the json.
-    encoding: string
+    encoding: string, optional
         The name of the encoding used to decode or encode the file.
         Default is whatever `locale.getpreferredencoding()` returns.
         `List of standand encoding
@@ -131,20 +131,70 @@ def dump_json(obj, filepath, encoding=None, errors=None, indent=4,
 
 
 def to_csv(dataset, filepath, mode="a", encoding=None, errors=None, newline='',
-        header=True, dialect='excel', **fmtparams):
-    """Save dataset to csv file."""
+           header=True, dialect='excel', **fmtparams):
+    """
+    Save dataset to csv file.
+
+    Open file with `open()` function and write with `csvwriter.writerows()`.
+
+    Parameters
+    ----------
+    dataset: iterable of iterables
+        The dataset to save [3]_.
+        If dataset is 1D e.g list, tuple, set,
+        the csv would have a column.
+        If dataset is 2D e.g list of list or list of tuple,
+        the inner iterables would be row.
+    filepath: string
+        filepath to save dataset
+    mode: string, optional
+        Mode in which file is opened.
+        Default is `'a'` which appends at the end of the file if it exists.
+        Another good choice is `'w'` which replace old file first.
+    encoding: string, optional
+        The name of the encoding used to decode or encode the file.
+        Default is whatever `locale.getpreferredencoding()` returns.
+        `List of standand encoding
+        <https://docs.python.org/3/library/codecs.html#standard-encodings>`_.
+    errors: string, optional
+        Specifies how encoding and decoding error should be handled
+        The standard names include [1]_: `strict`, `ignore`, `replace`,
+        `surrogateescape`, `xmlcharrefreplace`, `backslashreplace`,
+        `namereplace`.
+    newline: string, optional
+        Default is `''` [1]_.
+    header: bool, optional
+        Should header or first row be included in the file?
+        Default is True, include header or first row,
+    dialect: string or subclass of `csv.Dialect
+    <https://docs.python.org/3/library/csv.html#csv.Dialect>`_, optional
+        Default is `'excel'`.
+    **fmtparams: Dialects and formatting parameters, optional
+        For full details see `Dialects and formatting parameters
+        <https://docs.python.org/3/library/csv.html#csv-fmt-params>`
+
+    References
+    ----------
+    .. [1] `open() documentation:
+        <https://docs.python.org/3/library/functions.html#open>`_
+    .. [2] `csvwriter documentation
+        <https://docs.python.org/3/library/csv.html#csv.writer>`_
+    .. [3] `writer() method documentation
+        <https://docs.python.org/3/library/csv.html#csv.csvwriter.writerows>`_
+    """
     with open(filepath, mode=mode, encoding=encoding, errors=errors,
-            newline=newline) as csvfile:
+              newline=newline) as csvfile:
         writer = csv.writer(csvfile, dialect=dialect, **fmtparams)
         if header:
             writer.writerows(dataset)
         else:
             writer.writerows(dataset[1:])
-    print("Dataset saved to", filepath)
 
 
-def requests_get(url, trials=0, sleep_time=30, max_try=math.inf, **requests_kwargs):
-    """Send a get request with requests library. 
+def requests_get(url, trials=0, sleep_time=30, max_try=math.inf,
+                 **requests_kwargs):
+    """
+    Send a get request with requests library. 
     Keep retrying till max_try when there's a bad code or error.
     """
     trials += 1
