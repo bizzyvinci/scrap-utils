@@ -1,5 +1,17 @@
-"""This module provides some functions that might save you from repetition in scraping projects."""
-import csv, json, math, time
+"""
+============
+Scrap Utils
+============
+This module provides some functions that might save you from repetition
+in scraping projects.
+
+
+"""
+
+import csv
+import json
+import math
+import time
 import requests
 
 
@@ -9,12 +21,48 @@ class MaxTryReached(Exception):
 
 
 def load_json(filepath, encoding=None, errors=None, parse_float=None,
-        parse_int=None, parse_constant=None):
-    """Load json from file."""
+              parse_int=None, parse_constant=None):
+    """
+    Load json from file.
+
+    Open file with open() function and load data with json.load()
+
+    Parameters
+    ----------
+    filepath: string
+        The json filepath to load.
+    encoding: string, optional
+        The name of the encoding used to decode or encode the file.
+        Default is whatever `locale.getpreferredencoding()` returns.
+        `List of standand encoding
+        <https://docs.python.org/3/library/codecs.html#standard-encodings>`_.
+    errors: string, optional
+        Specifies how encoding and decoding error should be handled
+        The standard names include [1]_: `strict`, `ignore`, `replace`,
+        `surrogateescape`, `xmlcharrefreplace`, `backslashreplace`,
+        `namereplace`.
+    parse_float: datatype, optional
+        It will be called with the string of every JSON float to be decoded.
+        Default is equivalent to `float(num_str)`.
+        Example of another datatype that can be used is `decimal.Demimal`.
+    parse_int: datatype, optional
+        It will be called with the string of every JSON int to be decoded.
+        Default is equivalent to `int(num_str)`.
+        Example of another datatype that can be used is `float`.
+    parse_constant [2]_: datatype, optional
+        It will be called with one of the following strings:
+        `'-Infinity'`, `'Infinity'`, `'NaN'`.
+
+    References
+    ----------
+    .. [1] `open() documentation:
+        <https://docs.python.org/3/library/functions.html#open>`_
+    .. [2] `json.load() documentation
+        <https://docs.python.org/3/library/json.html#json.load>`_
+    """
     with open(filepath, 'r', encoding=encoding, errors=errors) as file:
         data = json.load(file, parse_float=parse_float, parse_int=parse_int,
-                        parse_constant=parse_constant)
-    print("Json loaded from", filepath)
+                         parse_constant=parse_constant)
     return data
 
 
