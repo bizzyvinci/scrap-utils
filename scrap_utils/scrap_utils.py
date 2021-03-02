@@ -5,12 +5,23 @@ Scrap Utils
 This module provides some functions that might save you from repetition
 in scraping projects.
 
-
+Functions
+---------
++-------------------+-----------------------------------------------+
+| load_json         | Load json from file                           |
++-------------------+-----------------------------------------------+
+| dump_json         | Dump json into filepath                       |
++-------------------+-----------------------------------------------+
+| to_csv            | Save dataset to csv file                      |
++-------------------+-----------------------------------------------+
+| requests_get      | Send a GET request with requests library      |
++-------------------+-----------------------------------------------+
+| requests_post     | Send a POST request with requests library     |
++-------------------+-----------------------------------------------+
 """
 
 import csv
 import json
-import math
 import time
 import logging
 import requests
@@ -77,7 +88,7 @@ def dump_json(obj, filepath, encoding=None, errors=None, indent=4,
               skipkeys=False, ensure_ascii=False, separators=None,
               sort_keys=False):
     """
-    Dump json data into filepath.
+    Dump json into filepath.
 
     Open file with `open()` function and dump json with `json.dump()`.
 
@@ -203,7 +214,7 @@ def to_csv(dataset, filepath, mode="a", encoding=None, errors=None, newline='',
 def requests_get(url, sleep_time=30, max_try=5, trials=0,
                  **requests_kwargs):
     """
-    Send a get request with requests library.
+    Send a GET request with requests library.
 
     Keep retrying till max_try when there's a bad code or error.
     The motivation are server(5xx) errors and network issues,
@@ -238,13 +249,13 @@ def requests_get(url, sleep_time=30, max_try=5, trials=0,
             return response
         else:
             logging.warning(
-                f"Requests Get Bad Status Code: {response.status_code}; "
+                f"Requests GET Bad Status Code: {response.status_code}; "
                 f"{trials}/{max_try} trials; Sleep Time: {sleep_time}; "
                 f"Url: {url}"
             )
     except Exception as e:
         logging.error(
-            f"Requests Get Error: {e}; {trials}/{max_try} trials; "
+            f"Requests GET Error: {e}; {trials}/{max_try} trials; "
             f"Sleep Time: {sleep_time}; Url: {url}"
         )
 
@@ -256,32 +267,64 @@ def requests_get(url, sleep_time=30, max_try=5, trials=0,
         )
     else:
         raise MaxTryReached(
-            f"Max Try of {max_try} has been reached for requests get."
+            f"Max Try of {max_try} has been reached for requests GET."
         )
 
 
-def requests_post(url, trials=0, sleep_time=30, max_try=math.inf, **requests_kwargs):
-    """ Send a post request with requests library.
+def requests_post(url, sleep_time=30, max_try=5, trials=0, **requests_kwargs):
+    """
+    Send a POST request with requests library.
+
     Keep retrying till max_try when there's a bad code or error.
+    The motivation are server(5xx) errors and network issues,
+    which simply require trying again.
+
+    Parameters
+    ----------
+    url: str
+        URL for the new Request object.
+    sleep_time: int, default 30
+        The seconds to sleep before retrying (if there's error).
+    max_try: int, default 5
+        The maximum number of trial before raising error.
+    trials: int, default 0
+        The number of times the request has been sent.
+    **requests_kwargs:
+        Optional arguments that request takes.
+
+    Returns
+    -------
+    response: requests.Response object
+
+    References
+    ----------
+    .. [1] `requests.post() documentation
+        <https://requests.readthedocs.io/en/latest/api/#requests.post>`_
     """
     trials += 1
-
     try:
         response = requests.post(url, **requests_kwargs)
         if response.status_code == 200:
             return response
         else:
-            print("\nRequests Post Bad Status Code: {}\nTrial: {}; Max Try: {}; Sleep Time: {}\nUrl: {}\n".format(
-                response.status_code, trials, max_try, sleep_time, url)
+            logging.warning(
+                f"Requests POST Bad Status Code: {response.status_code}; "
+                f"{trials}/{max_try} trials; Sleep Time: {sleep_time}; "
+                f"Url: {url}"
             )
     except Exception as e:
-        print("\nRequests Post Error: {}\nTrial: {}; Max Try: {}; Sleep Time: {}\nUrl: {}\n".format(
-            e, trials, max_try, sleep_time, url)
+        logging.error(
+            f"Requests POST Error: {e}; {trials}/{max_try} trials; "
+            f"Sleep Time: {sleep_time}; Url: {url}"
         )
 
     # When there's error or bad status code.
     if trials < max_try:
         time.sleep(sleep_time)
-        return requests_post(url, trials, sleep_time, max_try, **requests_kwargs)
+        return requests_post(
+            url, sleep_time, max_try, trials, **requests_kwargs
+        )
     else:
-        raise MaxTryReached("Max Trial of {} has been reached for requests post. Url: {}".format(max_try, url))
+        raise MaxTryReached(
+            f"Max Try of {max_try} has been reached for requests POST."
+        )
