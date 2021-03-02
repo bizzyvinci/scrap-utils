@@ -12,6 +12,7 @@ import csv
 import json
 import math
 import time
+import logging
 import requests
 
 
@@ -29,14 +30,14 @@ def load_json(filepath, encoding=None, errors=None, parse_float=None,
 
     Parameters
     ----------
-    filepath: string
+    filepath: str
         The json filepath to load.
-    encoding: string, optional
+    encoding: str, optional
         The name of the encoding used to decode or encode the file.
         Default is whatever `locale.getpreferredencoding()` returns.
         `List of standand encoding
         <https://docs.python.org/3/library/codecs.html#standard-encodings>`_.
-    errors: string, optional
+    errors: str, default None
         Specifies how encoding and decoding error should be handled
         The standard names include [1]_: `strict`, `ignore`, `replace`,
         `surrogateescape`, `xmlcharrefreplace`, `backslashreplace`,
@@ -61,7 +62,7 @@ def load_json(filepath, encoding=None, errors=None, parse_float=None,
 
     References
     ----------
-    .. [1] `open() documentation:
+    .. [1] `open() documentation
         <https://docs.python.org/3/library/functions.html#open>`_
     .. [2] `json.load() documentation
         <https://docs.python.org/3/library/json.html#json.load>`_
@@ -85,39 +86,43 @@ def dump_json(obj, filepath, encoding=None, errors=None, indent=4,
     obj: python object
         A python object to convert to json using this `conversion table
         <https://docs.python.org/3/library/json.html#py-to-json-table>`_.
-    filepath: string
+    filepath: str
         filepath to save the json.
-    encoding: string, optional
+    encoding: str, optional
         The name of the encoding used to decode or encode the file.
         Default is whatever `locale.getpreferredencoding()` returns.
         `List of standand encoding
         <https://docs.python.org/3/library/codecs.html#standard-encodings>`_.
-    errors: string, optional
+    errors: str, default None
         Specifies how encoding and decoding error should be handled
         The standard names include [1]_: `strict`, `ignore`, `replace`,
         `surrogateescape`, `xmlcharrefreplace`, `backslashreplace`,
         `namereplace`.
-    indent: int, optional
+    indent: int, default 4
         A positive integer indicates the number of spaces to indent levels.
-    skipkeys: bool, optional
-        If `True` (default is `False`), dict keys that are not of a basic type
+    skipkeys: bool, default False
+        If `True`, dict keys that are not of a basic type
         (str, int, float, bool, None) will be skipped
         instead of raising a TypeError.
-    ensure_ascii: bool, optional
-        If ensure_ascii is `True` (the default), the output is
+    ensure_ascii: bool, default True
+        If ensure_ascii is `True`, the output is
         guaranteed to have all incoming non-ASCII characters escaped.
         If ensure_ascii is `False`, these characters will be output as-is.
-    seperators: (item_separator, key_separator) tuple, optional
-        default is `(', ', ': ')`.
+    seperators: (item_separator, key_separator) tuple, default `(', ', ': ')`
+        A tuple of 2 strings, item seperator & key seperator.
         To eliminate space and make json compact, use `(',', ':')`
         and set `indent` to `None`.
     sort_keys: bool, optional
         If sort_keys is `True` (default: `False`),
         then the output of dictionaries will be sorted by key.
 
+    Returns
+    -------
+    None
+
     References
     ----------
-    .. [1] `open() documentation:
+    .. [1] `open() documentation
         <https://docs.python.org/3/library/functions.html#open>`_
     .. [2] `json.dump() documentation
         <https://docs.python.org/3/library/json.html#json.dump>`_
@@ -139,31 +144,31 @@ def to_csv(dataset, filepath, mode="a", encoding=None, errors=None, newline='',
 
     Parameters
     ----------
-    dataset: iterable of iterables
+    dataset: iterable[ of iterables]
         The dataset to save [3]_.
         If dataset is 1D e.g list, tuple, set,
         the csv would have a column.
         If dataset is 2D e.g list of list or list of tuple,
         the inner iterables would be row.
-    filepath: string
-        filepath to save dataset
-    mode: string, optional
+    filepath: str
+        filepath to save dataset.
+    mode: str, default 'a'
         Mode in which file is opened.
         Default is `'a'` which appends at the end of the file if it exists.
         Another good choice is `'w'` which replace old file first.
-    encoding: string, optional
+    encoding: str, optional
         The name of the encoding used to decode or encode the file.
         Default is whatever `locale.getpreferredencoding()` returns.
         `List of standand encoding
         <https://docs.python.org/3/library/codecs.html#standard-encodings>`_.
-    errors: string, optional
+    errors: str, default None
         Specifies how encoding and decoding error should be handled
         The standard names include [1]_: `strict`, `ignore`, `replace`,
         `surrogateescape`, `xmlcharrefreplace`, `backslashreplace`,
         `namereplace`.
-    newline: string, optional
+    newline: str, optional
         Default is `''` [1]_.
-    header: bool, optional
+    header: bool, default True
         Should header or first row be included in the file?
         Default is True, include header or first row,
     dialect: string or subclass of `csv.Dialect
@@ -173,9 +178,13 @@ def to_csv(dataset, filepath, mode="a", encoding=None, errors=None, newline='',
         For full details see `Dialects and formatting parameters
         <https://docs.python.org/3/library/csv.html#csv-fmt-params>`
 
+    Returns
+    -------
+    None
+
     References
     ----------
-    .. [1] `open() documentation:
+    .. [1] `open() documentation
         <https://docs.python.org/3/library/functions.html#open>`_
     .. [2] `csvwriter documentation
         <https://docs.python.org/3/library/csv.html#csv.writer>`_
@@ -191,33 +200,64 @@ def to_csv(dataset, filepath, mode="a", encoding=None, errors=None, newline='',
             writer.writerows(dataset[1:])
 
 
-def requests_get(url, trials=0, sleep_time=30, max_try=math.inf,
+def requests_get(url, sleep_time=30, max_try=5, trials=0,
                  **requests_kwargs):
     """
-    Send a get request with requests library. 
+    Send a get request with requests library.
+
     Keep retrying till max_try when there's a bad code or error.
+    The motivation are server(5xx) errors and network issues,
+    which simply require trying again.
+
+    Parameters
+    ----------
+    url: str
+        URL for the new Request object.
+    sleep_time: int, default 30
+        The seconds to sleep before retrying (if there's error).
+    max_try: int, default 5
+        The maximum number of trial before raising error.
+    trials: int, default 0
+        The number of times the request has been sent.
+    **requests_kwargs:
+        Optional arguments that request takes.
+
+    Returns
+    -------
+    response: requests.Response object
+
+    References
+    ----------
+    .. [1] `requests.get() documentation
+        <https://requests.readthedocs.io/en/latest/api/#requests.get>`_
     """
     trials += 1
-
     try:
         response = requests.get(url, **requests_kwargs)
         if response.status_code == 200:
             return response
         else:
-            print("\nRequests Get Bad Status Code: {}\nTrial: {}; Max Try: {}; Sleep Time: {}\nUrl: {}\n".format(
-                response.status_code, trials, max_try, sleep_time, url)
+            logging.warning(
+                f"Requests Get Bad Status Code: {response.status_code}; "
+                f"{trials}/{max_try} trials; Sleep Time: {sleep_time}; "
+                f"Url: {url}"
             )
     except Exception as e:
-        print("\nRequests Get Error: {}\nTrial: {}; Max Try: {}; Sleep Time: {}\nUrl: {}\n".format(
-            e, trials, max_try, sleep_time, url)
+        logging.error(
+            f"Requests Get Error: {e}; {trials}/{max_try} trials; "
+            f"Sleep Time: {sleep_time}; Url: {url}"
         )
 
     # When there's error or bad status code.
     if trials < max_try:
         time.sleep(sleep_time)
-        return requests_get(url, trials, sleep_time, max_try, **requests_kwargs)
+        return requests_get(
+            url, sleep_time, max_try, trials, **requests_kwargs
+        )
     else:
-        raise MaxTryReached("Max Trial of {} has been reached for requests get. Url: {}".format(max_try, url))
+        raise MaxTryReached(
+            f"Max Try of {max_try} has been reached for requests get."
+        )
 
 
 def requests_post(url, trials=0, sleep_time=30, max_try=math.inf, **requests_kwargs):
