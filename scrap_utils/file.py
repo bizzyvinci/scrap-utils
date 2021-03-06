@@ -179,3 +179,7 @@ def to_csv(dataset, filepath, mode="a", encoding=None, errors=None, newline='',
             writer.writerows(dataset)
         else:
             writer.writerows(dataset[1:])
+
+
+def read_csv():
+    pass

@@ -14,9 +14,11 @@ Functions
 +-------------------+-----------------------------------------------+
 | to_csv            | Save dataset to csv file                      |
 +-------------------+-----------------------------------------------+
-| requests_get      | Send a GET request with requests library      |
+| read_csv          | Read dataset from csv file                      |
 +-------------------+-----------------------------------------------+
-| requests_post     | Send a POST request with requests library     |
+| get               | Send a GET request with requests library      |
++-------------------+-----------------------------------------------+
+| post              | Send a POST request with requests library     |
 +-------------------+-----------------------------------------------+
 """
 

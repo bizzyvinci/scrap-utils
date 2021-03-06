@@ -9,8 +9,8 @@ class MaxTryReached(Exception):
     pass
 
 
-def requests_get(url, sleep_time=30, max_try=5, trials=0,
-                 **requests_kwargs):
+def get(url, sleep_time=30, max_try=5, trials=0,
+        **requests_kwargs):
     """
     Send a GET request with requests library.
 
@@ -60,7 +60,7 @@ def requests_get(url, sleep_time=30, max_try=5, trials=0,
     # When there's error or bad status code.
     if trials < max_try:
         time.sleep(sleep_time)
-        return requests_get(
+        return get(
             url, sleep_time, max_try, trials, **requests_kwargs
         )
     else:
@@ -69,7 +69,7 @@ def requests_get(url, sleep_time=30, max_try=5, trials=0,
         )
 
 
-def requests_post(url, sleep_time=30, max_try=5, trials=0, **requests_kwargs):
+def post(url, sleep_time=30, max_try=5, trials=0, **requests_kwargs):
     """
     Send a POST request with requests library.
 
@@ -119,7 +119,7 @@ def requests_post(url, sleep_time=30, max_try=5, trials=0, **requests_kwargs):
     # When there's error or bad status code.
     if trials < max_try:
         time.sleep(sleep_time)
-        return requests_post(
+        return post(
             url, sleep_time, max_try, trials, **requests_kwargs
         )
     else:
