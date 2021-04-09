@@ -1,5 +1,6 @@
 build/
 dist/
+plan.md
 *.egg-info/
 *.egg
 *.py[cod]
